@@ -1,8 +1,14 @@
 `np.arange(1, 10)` - generates an array from 1 to 9 with deafult step 1
+
 `np.array(list)` - transform python list into NumPy array
+
 `np.sqrt(number_or_numpy_array)` - calculate square root of number or numpy array
+
 `np.empty(10000)` - initialize empty array of `10000` entries
+
 `np.sum(numpy_array)` - calculate sum of the numpy array
+
+`numpy_array.shape` - return number of rows and columns
 
 ## Random
 

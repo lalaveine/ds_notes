@@ -2,13 +2,17 @@
 import seaborn as sns
 import matplorlib.pylot as plt
 import numpy as np
+import pandas as pd
 
 ## Set seaborn style
-sns.set()
+`sns.set()`
+
+## set ggplot style
+`plt.style.use('ggplot')`
 
 ## Label axis (axis are label in the end)
-_ = plt.xlabel('label name')
-_ = plt.ylabel('label name')
+`_ = plt.xlabel('label name')`
+`_ = plt.ylabel('label name')`
 
 ## Set limits for axis
 `plt.ylim(beg, end)`
