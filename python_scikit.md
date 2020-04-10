@@ -86,3 +86,28 @@ y_pred = knn.predict(X_test)
 
 accuracy = knn.score(X_test, y_test)
 ```
+
+## linear regression
+
+`from sklearn.linear_model import LinearRegression`
+
+Here is example of how to use and plot it:
+
+```
+from sklearn.linear_model import LinearRegression
+import numpy as np
+import matplotlib.pyplot as plt
+
+reg = LinearRegression()
+reg.fit(X_rooms, y)
+
+prediction_space = np.linspace(min(X_rooms),
+                                    max(X_rooms)).reshape(-1, 1)
+
+plt.scatter(X_rooms, y, color = 'blue')
+plt.plot(prediction_space, reg.predict(prediction_space),
+            color = 'black', linewidth = 3)
+
+plt.show()
+```
+

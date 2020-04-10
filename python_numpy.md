@@ -10,6 +10,10 @@
 
 `numpy_array.shape` - return number of rows and columns
 
+`numpy_array.reshape(-1, 1)`
+
+`np.linspace(start, stop)` - return evenly spaced numbers over specified interval
+
 ## Random
 
 Pseudo random number generator starts with an integer number called a **seed** and generates random numbers in succession.
