@@ -19,3 +19,9 @@ where `c` stands for color
 `df.info()`
 
 `df.describe()`
+
+## drop
+`df.drop('column_name', axis = 1)`
+
+### useful options
+`inplace` - (bool) deletes column in a dataset and saves its state

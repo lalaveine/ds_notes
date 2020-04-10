@@ -82,3 +82,10 @@ _ = plt.ylabel('percent of vote for Obama')
 
 ```
 
+## countplot
+
+Countplot is similar to barplot, but it works with categorical data, instead of quantitative. E.g. here countplot is used to show how the votes of democrats and republicans were distributed on the subject of education.
+
+`_ = sns.countplot(x = 'education', hue = 'party', data = df, pallette = 'RdBu')`
+
+`plt.xticks([0,1], ['No', 'Yes'])`
