@@ -111,3 +111,133 @@ plt.plot(prediction_space, reg.predict(prediction_space),
 plt.show()
 ```
 
+## Cross-validation
+
+`from sklearn.model_selection import cross_val_score`
+
+```
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LinearRegression
+
+reg = LinearRegression()
+
+cv_results = cross_val_score(reg, X, y, cv = 5) # where 'cv' is a number of folds in cross validation
+
+np.mean(cv_results)
+```
+
+## Ridge regression
+
+`from sklearn.linear_model import Ridge`
+
+```
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test =
+    train_test_split(X, y, test_size = 0.3,
+                    random_state = 21)
+
+ridge = Ridge(aplha = 0.1, normalize = True) # setting 'normalize' to 'True' insures that all of our variables are on the same scale
+
+ridge.fit(X_train, y_train)
+
+ridge_pred = ridge.predict(X_test)
+
+ridge.score(X_test, y_test)
+```
+
+## Lasso regression
+
+`from sklearn.linear_model import Lasso`
+
+```
+from sklearn.linear_model import Lasso
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test =
+    train_test_split(X, y, test_size = 0.3, random_state = 21)
+
+lasso = Lasso(alpha = 0.1, normalize = True)
+
+lasso.fit(X_train, y_train)
+
+lasso_pred = lasso.predict(X_test)
+
+lasso.score(X_test, y_test)
+```
+
+> NOTE: Lasso regression can be used to select important features of a dataset
+> Because it tends to shrink coefficients of less important features to exactly 0
+
+```
+from sklearn.linear_model import Lasso
+
+names = boston.drop('MEDV', axis = 1).columns
+
+lasso = Lasso(aplha = 0.1)
+lasso_coef = lasso.fit(X, y).coef_
+
+# plotting the coefficient as a function of feature name, yields this figure, telling exactly what the most important coefficients are
+
+_ = plt.plot(range(len(names)), lasso_coef)
+_ = plt.xticks(range(len(names)), names, rotation = 60)
+_ = plt.ylabel('Coefficients')
+
+plt.show()
+```
+
+## Confusion matrix
+
+Confusion matrix looks somthing like this
+
+&nbsp; | Predicted: Spam Email | Predicted: Read Email
+--- | --- | ---
+Actual: Spam Email | True Positive | False Negative
+Actual: Real Email | False Positive | True Negative
+
+From this matrix:
+
+* Accuracy: `(tp + tn) / (tp + tn + fp + fn)`
+
+> NOTE: tp - true positive, tn - true negative, fp - false positive, fn - false negative
+
+* Precision: tp / (tp + fp)
+
+> NOTE: Precision also called Positive Predictive Value or PPV
+In this case precision means the number of correctly labeled spam emails divided by the total number of email classified as spam
+
+* Recall: tp / (tp + fn)
+
+> NOTE: this is also called Sensetivity, Hit Rate, or True Positive Rate
+
+* F1score: 2 * (precision * recall / (precision + recall))
+
+> NOTE: In other words it's harmonic mean of precision and recall
+
+* High precision: Not many real email are predicted as spam
+
+* High recall: Predicted most spam email correctly
+
+```
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+
+knn = KNeighborsClassifier(n_neighbors = 8)
+
+X_train, X_test, y_train, y_test =
+    train_test_split(X, y, test_size = 0.4, random_state = 42)
+
+knn.fit(X_train, y_train)
+
+y_pred = knn.predict(X_test)
+
+# Compute confusion matrix
+print(confusion_matrix(y_test, y_pred))
+
+# Compute classification matrix
+print(classification_report(y_test, y_pred))
+# Classification report outputs a string containing all the relevant metrics (precision, recall, f1-score, support)
+```
+
+> NOTE: for all metrics in scikit-learn, the first argument is always the true label and the prediction is always the second argument
