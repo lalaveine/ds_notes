@@ -14,6 +14,8 @@
 
 `np.linspace(start, stop)` - return evenly spaced numbers over specified interval
 
+`np.logspace(start, stop, num)` - returns numbers spaced evenly on a log scale. `num` here is a number of samples to regenerate.
+
 ## Random
 
 Pseudo random number generator starts with an integer number called a **seed** and generates random numbers in succession.

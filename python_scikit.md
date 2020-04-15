@@ -64,9 +64,7 @@ Accuracy = number of corrent predictions / total number of data points
 `from sklearn.model_selection import train_test_split`
 
 ```
-X_train, X_test, y_train, y_test =
-    train_test_split(X, y, test_size = 0.3,
-                    random_state = 21, stratify = y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 21, stratify = y)
 ```
 
 Here `X` is a feature set and `y` is a target set.
@@ -202,14 +200,21 @@ From this matrix:
 
 > NOTE: tp - true positive, tn - true negative, fp - false positive, fn - false negative
 
-* Precision: tp / (tp + fp)
+* Precision : tp / (tp + fp) 
 
 > NOTE: Precision also called Positive Predictive Value or PPV
+
 In this case precision means the number of correctly labeled spam emails divided by the total number of email classified as spam
 
-* Recall: tp / (tp + fn)
+* Specificity: tn / (tn + fp)
+
+**Specificity** tells what percentage of **negative cases** (normal emails) were correctly identified by chosen model.
+
+* Recall (Sensitivity): tp / (tp + fn)
 
 > NOTE: this is also called Sensetivity, Hit Rate, or True Positive Rate
+
+**Sensitivity** tells what percentage of **positive cases** (spam emails) were correctly identified by chosen model.
 
 * F1score: 2 * (precision * recall / (precision + recall))
 
@@ -304,4 +309,132 @@ from sklearn.model_selection import cross_val_score
 cv_scores = cross_val_score(logreg, X, y, cv = 5, scoring = 'roc_auc')
 
 print(cv_scores)
+```
+
+## Mean squared error (MSE)
+
+`from sklearn.metrics import mean_squared_error`
+
+`mse = mean_squared_error(y_test, y_pred)`
+
+## Decision tree
+
+`from sklearn.tree import DecisionTreeClassifier`
+
+## Elastic net
+
+`from sklearn.linear_model import ElasticNet`
+
+```
+# Import necessary modules
+from sklearn.linear_model import ElasticNet
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import GridSearchCV, train_test_split
+
+# Create train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.4, random_state = 42)
+
+# Create the hyperparameter grid
+l1_space = np.linspace(0, 1, 30)
+param_grid = {'l1_ratio': l1_space}
+
+# Instantiate the ElasticNet regressor: elastic_net
+elastic_net = ElasticNet()
+
+# Setup the GridSearchCV object: gm_cv
+gm_cv = GridSearchCV(elastic_net, param_grid, cv = 5)
+
+# Fit it to the training data
+gm_cv.fit(X_train, y_train)
+
+# Predict on the test set and compute metrics
+y_pred = gm_cv.predict(X_test)
+r2 = gm_cv.score(X_test, y_test)
+mse = mean_squared_error(y_test, y_pred)
+print("Tuned ElasticNet l1 ratio: {}".format(gm_cv.best_params_))
+print("Tuned ElasticNet R squared: {}".format(r2))
+print("Tuned ElasticNet MSE: {}".format(mse))
+```
+
+## Hyperparameter tuning
+
+### Grid search
+
+`from sklearn.model_selection import GridSearchCV`
+
+```
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {'n_neighbors': np.arrange(1, 50)}
+
+knn = KNeighborsClassifier()
+
+knn_cv = GridSearchCV(knn, param_grid, cv = 5)
+
+knn_cv.fit(X, y)
+
+knn_cv.best_params_
+knn_cv.best_score_
+```
+
+> NOTE: Grid Search may be computationally expensive when dealing with large hyperparameter space or multiple hyperparameters
+> The solution to this is Randomized Search
+
+### Randomized search
+
+`from sklearn.model_selection import RandomizedSearchCV`
+
+```
+# Import necessary modules
+from scipy.stats import randint
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import RandomizedSearchCV
+
+# Setup the parameters and distributions to sample from: param_dist
+param_dist = {"max_depth": [3, None],
+              "max_features": randint(1, 9),
+              "min_samples_leaf": randint(1, 9),
+              "criterion": ["gini", "entropy"]}
+
+# Instantiate a Decision Tree classifier: tree
+tree = DecisionTreeClassifier()
+
+# Instantiate the RandomizedSearchCV object: tree_cv
+tree_cv = RandomizedSearchCV(tree, param_dist, cv=5)
+
+# Fit it to the data
+tree_cv.fit(X, y)
+
+# Print the tuned parameters and score
+print("Tuned Decision Tree Parameters: {}".format(tree_cv.best_params_))
+print("Best score is {}".format(tree_cv.best_score_))
+```
+
+### Hold-out set
+
+```
+# Import necessary modules
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
+
+# Create the hyperparameter grid
+c_space = np.logspace(-5, 8, 15)
+param_grid = {'C': c_space, 'penalty': ['l1', 'l2']}
+
+# Instantiate the logistic regression classifier: logreg
+logreg = LogisticRegression()
+
+# Create train and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.4, random_state = 42)
+
+# Instantiate the GridSearchCV object: logreg_cv
+logreg_cv = GridSearchCV(logreg, param_grid, cv = 5)
+
+# Fit it to the training data
+logreg_cv.fit(X_train, y_train)
+
+# Print the optimal parameters and best score
+print("Tuned Logistic Regression Parameter: {}".format(logreg_cv.best_params_))
+print("Tuned Logistic Regression Accuracy: {}".format(logreg_cv.best_score_))
 ```
