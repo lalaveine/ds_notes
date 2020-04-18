@@ -59,6 +59,8 @@ Accuracy = number of corrent predictions / total number of data points
 
 > NOTE: it's common to split the data into training and test sets
 
+`accuracy_score(y_test, y_pred)`
+
 ### train/test split
 
 `from sklearn.model_selection import train_test_split`
@@ -356,9 +358,15 @@ print("Tuned ElasticNet R squared: {}".format(r2))
 print("Tuned ElasticNet MSE: {}".format(mse))
 ```
 
+## Support Vector Machine (SVM)
+
+`from sklearn.svm import SVC`
+
 ## Hyperparameter tuning
 
 ### Grid search
+
+> NOTE: you need to specify the hyperparameter space using the following notation: `'step_name__parameter_name'`. E.g. `'SVC__gamma'`
 
 `from sklearn.model_selection import GridSearchCV`
 
@@ -437,4 +445,151 @@ logreg_cv.fit(X_train, y_train)
 # Print the optimal parameters and best score
 print("Tuned Logistic Regression Parameter: {}".format(logreg_cv.best_params_))
 print("Tuned Logistic Regression Accuracy: {}".format(logreg_cv.best_score_))
+```
+
+## Preprocessing
+
+* Scikit learn does not accept categorical value by default
+* Need to encode categarical features numerically
+* Convert to 'dummy variables'
+    * 0: Observation was NOT that category
+    * 1: Observation was that category
+
+### Dummy variables
+
+* scikit-learn: OneHotEncoder()
+* pandas: get_dummies()
+
+```
+import pandas as pd
+
+df = pd.read_csv('auto.csv')
+df_origin = pd.get_dummies(df)
+print(df.origin.head())
+
+df_origin = df_origin.drop('origin_Asia', axis = 1) # if column can be implicitly defined from other columns than it's safe to drop it
+print(df_origin.head())
+```
+
+> NOTE: `get_dummies` has `drop_first` parameter that removes column just like in the example above
+
+
+## Missing data
+
+First step is to replace any missing data with NaN. Here we know that missing data is represented by zeros, so we change it accordingly.
+
+```
+df.insulin.replace(0, np.nan, inplace = True)
+df.triceps.replace(0, np.nan, inplace = True)
+df.bmi.replace(0, np.nan, inplace = True)
+df.info()
+```
+
+Also it can be done like that
+
+`df[df == '?'] = np.nan`
+
+### Drop mising data
+
+`df = df.dropna()`
+
+This method is often inacceptable, as it drops too many data points.
+
+### Imputing missing data
+
+* Making an educated guess about the missing values
+
+* Example: Using the mean of the non-mising entries
+
+```
+from sklearn.preprocessing import Imputer
+
+imp = Imputer(missing_values='NaN', strategy='mean', axis=0) # axis=0 means impute along columns, axis=1 would mean rows
+
+imp.fit(X)
+
+X = imp.transform(X)
+```
+
+> NOTE: Due to their ability to transform data imputers are known as **transformers**. Any model that can transform data this way, using the transform method, is called a **transformer**.
+
+#### Imputing within pipeline
+
+```
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import Imputer
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+
+imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+logreg = LogisticRegression()
+
+steps = [('imputation', imp), 
+            ('logistic_regression', logreg)]
+
+pipeline = Pipeline(steps)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+pipeline.fit(X_train, y_train)
+
+y_pred = pipeline.predict(X_test)
+
+pipeline.score(X_test, y_test)
+
+print(classification_report(y_test, y_pred))
+```
+> NOTE: In a pipeline each step but the last must be a **transformer** and the last must be an **estimator**, such as, a classifier or regressor
+
+## Centering and scaling
+
+### Normalizing
+
+* Standartizaion: Substract the mean and divide by variance
+
+* All features are centered around zero and have variance one
+
+* Can also substact the minimum and divide by the range
+
+* So that normalized data set has minimun 0 and maximum 1
+
+* Can also normalize so data ranges from -1 to 1 instead
+
+#### Standartization
+
+We pass feature data to scalar and this returns out scaled data
+
+```
+from sklearn.preprocessing import scale
+
+X_scale = scale(X)
+```
+
+We can also put a scalar in a pipeline object
+
+```
+from sklearn.preprocessing import StandartScaler
+steps = [('scaler', StandartScaler()),
+            ('knn', KNeighborsClassifier())]
+pipeline = Pipeline(steps)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=21)
+knn_scaled = pipeline.fit(X_train, y_train)
+y_pred = pipeline.predict(X_test)
+accuracy_score(y_test, y_pred)
+```
+
+We can also use scaling with cross-validation
+
+```
+steps = [('scaler', StandartScaler()), ('knn', KNeighborsClassifier())]
+pipeline = Pipeline(steps)
+parameters = {knn__n_neighbors: np.arange(1, 50)}
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=21)
+cv = GridSearchCV(pipeline, param_grid=parameters)
+cv.fit(X_train, y_train)
+y_pred = cv.predict(X_test)
+
+print(cv.best_params_)
+print(cv.score(X_test, y_test))
+print(classification_report(y_test, y_pred))
 ```

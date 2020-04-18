@@ -73,6 +73,22 @@ _ = plt.ylabel('percent of vote for Obama')
 
 ```
 
+Can also be created with pandas
+
+```
+# Import pandas
+import pandas as pd
+
+# Read 'gapminder.csv' into a DataFrame: df
+df = pd.read_csv('gapminder.csv')
+
+# Create a boxplot of life expectancy per region
+df.boxplot('life', 'Region', rot=60) # life is y axis and Region is x axis
+
+# Show the plot
+plt.show()
+```
+
 ## scatter plot
 
 ```
