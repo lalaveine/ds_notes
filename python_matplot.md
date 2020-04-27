@@ -25,6 +25,8 @@ import pandas as pd
 `marker` - how dots will be repsented on the plot, e.g. `'.'` for dots and `'D'` for diamonds
 `linestyle` - whether or not dots should be aproximated into a line. `'none'` for leaving the dots as they are.
 `linewidth` - (int) how wide should the line be
+`s` - size of the marker
+`alpha` - adjust transparency of the plor (dafault=1)
 
 ## plot histogram
 `plt.hist(data_set)` - plot histogram with default number of bins (10)
