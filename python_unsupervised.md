@@ -241,3 +241,78 @@ dendrogram(mergings,
             leaf_font_size=6)
 plt.show()
 ```
+
+
+## Dimension reduction
+
+* Provides more efficient storage and computation
+
+* Remove less-informative "noise" features
+
+* ... which cause problems for prediction tasks, e.g. classification, regression
+
+* In many real world applications it's dimention reduction that makes prediction possible
+
+### PCA - Principal Component Analysis
+
+Performs dimention reduction in two steps:
+
+* First step - "decorrelation"
+
+* Second step - reduces dimension
+
+#### First step
+
+In the first step PCA rotates the samples so they align with coordinate axes.
+
+It also shifts the samples so they have mean 0.
+
+* `fit()` method of `PCA` learns how to shift and how to rotate the samples (but doesn't change them)
+
+* `transform()` method applies the learned transformation
+
+* `transform()` method can be applied to a new data
+
+
+```
+from sklearn.decomposition import PCA
+
+
+model = PCA()
+model.fit(samples)
+transformed = model.transform(samples)
+```
+
+* `transform()` returns a new array of transformed samples 
+
+* new array has the same number of columns as the original sample array
+
+* rows of **transformed** correspond to samples
+
+* columns of **transformed** are the "PCA features"
+
+* row gives PCA feature values of corresponding sample
+
+* **PCA features are not correlated**
+
+* Resulting PCA features are not linearly correlated ("decorrelation")
+
+##### Pearson correlation
+
+* Measures linear correlation of features
+
+* Value between `-1` and `1`
+
+* Value of `0` means no linear correlation
+
+##### Principal components
+
+* "Principal components" = directions of variance
+
+* PCA aligns principal components with the axes
+
+* After a PCA model has been fit, "principal components" are available as a **components_** attribute of PCA object
+
+* This is a NumPy array with one row for each principal component
+
+* Each row defines displacement from mean
